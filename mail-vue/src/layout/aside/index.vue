@@ -2,7 +2,7 @@
   <el-scrollbar class="scroll">
     <div>
       <div class="title" >
-        <Icon icon="cloud-mail:mail" width="24" height="24" />
+        <img class="brand-logo" src="/brand-logo.png" width="32" height="32" alt="" aria-hidden="true"/>
         <div>{{settingStore.settings.title}}</div>
       </div>
       <el-menu :collapse="false" style="margin-top: 10px">
@@ -123,6 +123,13 @@ const route = useRoute();
 
 }
 
+
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
 
 .manage-title {
   margin-top: 10px;
