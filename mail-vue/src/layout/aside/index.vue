@@ -2,13 +2,13 @@
   <el-scrollbar class="scroll">
     <div>
       <div class="title" >
-        <Icon icon="mdi:email-outline" width="24" height="24" />
+        <Icon icon="cloud-mail:mail" width="24" height="24" />
         <div>{{settingStore.settings.title}}</div>
       </div>
-      <el-menu :collapse="false" text-color="#fff" active-text-color="#fff" style="margin-top: 10px">
+      <el-menu :collapse="false" style="margin-top: 10px">
         <el-menu-item @click="router.push({name: 'email'})" index="email"
                       :class="route.meta.name === 'email' ? 'choose-item' : ''">
-          <Icon icon="hugeicons:mailbox-01" width="20" height="20" />
+          <Icon icon="cloud-mail:inbox" width="20" height="20" />
           <span class="menu-name" style="margin-left: 21px">{{$t('inbox')}}</span>
         </el-menu-item>
         <el-menu-item @click="router.push({name: 'send'})" index="send" v-perm="'email:send'"
@@ -28,7 +28,7 @@
         </el-menu-item>
         <el-menu-item @click="router.push({name: 'setting'})" index="setting"
                       :class="route.meta.name === 'setting' ? 'choose-item' : ''">
-          <Icon icon="fluent:settings-48-regular" width="20" height="20" />
+          <Icon icon="cloud-mail:settings" width="20" height="20" />
           <span class="menu-name" style="margin-left: 21px">{{$t('settings')}}</span>
         </el-menu-item>
         <div class="manage-title" v-perm="['all-email:query','user:query','role:query','setting:query','analysis:query','reg-key:query']">
@@ -91,10 +91,13 @@ const route = useRoute();
   font-size: 16px;
   font-weight: bold;
   align-items: center;
-  justify-content: center;
-  gap: 5px;
-  color: #ffffff;
-  background: linear-gradient(135deg, #1890ff, #3a80dd);
+  gap: 10px;
+  color: var(--el-text-color-primary);
+
+  > svg {
+    flex-shrink: 0;
+    color: var(--mail-link-color);
+  }
   transition: all 0.3s ease;
   max-width: 240px;
   padding: 0 10px;
@@ -124,25 +127,26 @@ const route = useRoute();
 .manage-title {
   margin-top: 10px;
   padding-left: 20px;
-  color: #fff;
+  color: var(--form-desc-color);
+  font-size: 12px;
 }
 
 .el-menu-item {
   margin: 5px 10px !important;
   border-radius: 6px;
-  height: 36px;
+  height: 42px;
   padding: 10px !important;
 }
 
 .choose-item {
-  font-weight: bold;
-  background: rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(4px);
+  font-weight: 600;
+  background: var(--choose-account-background) !important;
+  color: var(--mail-link-color) !important;
 }
 
 @media (hover: hover) {
-  .el-menu-item:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
+  .el-menu-item:not(.choose-item):hover {
+    background: var(--email-hover-background) !important;
   }
 }
 
@@ -165,7 +169,9 @@ const route = useRoute();
 
 .el-menu {
   border-right: 0;
-  width: 260px;
+  width: 236px;
+  --el-menu-text-color: var(--el-text-color-primary);
+  --el-menu-active-color: var(--el-text-color-primary);
 }
 
 :deep(.el-divider__text) {

@@ -43,7 +43,7 @@
             </div>
             <div class="info-right">
               <el-dropdown class="setting">
-                <Icon icon="fluent:settings-24-filled" width="21" height="21" color="#909399"/>
+                <Icon class="settings-trigger" icon="cloud-mail:settings" width="21" height="21"/>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item @click="copyCode(item.code)">{{ $t('copy') }}</el-dropdown-item>

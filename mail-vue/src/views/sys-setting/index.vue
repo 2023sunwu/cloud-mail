@@ -5,10 +5,13 @@
     </div>
     <el-scrollbar class="scroll" v-if="!firstLoading">
       <div class="scroll-body">
+        <header class="page-heading">
+          <h1>{{ $t('SystemSettings') }}</h1>
+          <p>{{ $t('systemSettingsDescription') }}</p>
+        </header>
         <div class="card-grid">
-          <!-- Website Settings Card -->
           <div class="settings-card">
-            <div class="card-title">{{ $t('websiteSetting') }}</div>
+            <h2 class="card-title">{{ $t('websiteSetting') }}</h2>
             <div class="card-content">
               <div class="setting-item">
                 <div><span>{{ $t('websiteReg') }}</span></div>
@@ -67,16 +70,15 @@
                 </div>
                 <div class="forward">
                   <el-button class="opt-button" size="small" type="primary" @click="openEmailPrefix">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon class="settings-trigger" icon="cloud-mail:settings" width="18" height="18"/>
                   </el-button>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Personalization Settings Card -->
           <div class="settings-card">
-            <div class="card-title">{{ $t('customization') }}</div>
+            <h2 class="card-title">{{ $t('customization') }}</h2>
             <div class="card-content">
               <div class="setting-item">
                 <div class="title-item"><span>{{ $t('websiteTitle') }}</span></div>
@@ -98,6 +100,7 @@
                 <div><span>{{ $t('loginBackground') }}</span></div>
                 <div>
                   <el-image
+                      v-if="setting.background"
                       class="background"
                       :src="cvtR2Url(setting.background)"
                       :preview-src-list="[cvtR2Url(setting.background)]"
@@ -110,6 +113,7 @@
                       </div>
                     </template>
                   </el-image>
+                  <div v-else class="background background-empty">{{ $t('defaultLoginBackground') }}</div>
                   <div class="background-btn">
                     <el-button class="opt-button" size="small" type="primary" @click="openSetBackground">
                       <Icon icon="lsicon:edit-outline" width="16" height="16"/>
@@ -123,9 +127,8 @@
             </div>
           </div>
 
-          <!-- Email Sending Settings Card -->
           <div class="settings-card">
-            <div class="card-title">{{ $t('emailSetting') }}</div>
+            <h2 class="card-title">{{ $t('emailSetting') }}</h2>
             <div class="card-content">
               <div class="setting-item">
                 <div><span>{{ $t('receiveEmail') }}</span></div>
@@ -197,16 +200,15 @@
                 <div>
                   <el-button class="opt-button" style="margin-top: 0" @click="openBlackListForm" size="small"
                              type="primary">
-                    <Icon icon="fluent:settings-48-regular" width="16" height="16"/>
+                    <Icon class="settings-trigger" icon="cloud-mail:settings" width="16" height="16"/>
                   </el-button>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Object Storage Card -->
           <div class="settings-card">
-            <div class="card-title">{{ $t('oss') }}</div>
+            <h2 class="card-title">{{ $t('oss') }}</h2>
             <div class="card-content">
               <div class="r2domain-item">
                 <div>
@@ -228,7 +230,7 @@
                 </div>
                 <div class="r2domain">
                   <el-button class="opt-button" size="small" type="primary" @click="addS3Show = true">
-                    <Icon icon="fluent:settings-48-regular" width="16" height="16"/>
+                    <Icon class="settings-trigger" icon="cloud-mail:settings" width="16" height="16"/>
                   </el-button>
                 </div>
               </div>
@@ -246,14 +248,14 @@
           </div>
 
           <div class="settings-card">
-            <div class="card-title">{{ $t('emailPush') }}</div>
+            <h2 class="card-title">{{ $t('emailPush') }}</h2>
             <div class="card-content">
               <div class="setting-item">
                 <div><span>{{ $t('tgBot') }}</span></div>
                 <div class="forward">
                   <span>{{ setting.tgBotStatus === 0 ? $t('enabled') : $t('disabled') }}</span>
                   <el-button class="opt-button" size="small" type="primary" @click="openTgSetting">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon class="settings-trigger" icon="cloud-mail:settings" width="18" height="18"/>
                   </el-button>
                 </div>
               </div>
@@ -262,7 +264,7 @@
                 <div class="forward">
                   <span>{{ setting.forwardStatus === 0 ? $t('enabled') : $t('disabled') }}</span>
                   <el-button class="opt-button" size="small" type="primary" @click="openThirdEmailSetting">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon class="settings-trigger" icon="cloud-mail:settings" width="18" height="18"/>
                   </el-button>
                 </div>
               </div>
@@ -271,22 +273,21 @@
                 <div class="forward">
                   <span>{{ setting.ruleType === 0 ? $t('forwardAll') : $t('rules') }}</span>
                   <el-button class="opt-button" size="small" type="primary" @click="openForwardRules">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon class="settings-trigger" icon="cloud-mail:settings" width="18" height="18"/>
                   </el-button>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Turnstile Verification Card -->
           <div class="settings-card">
-            <div class="card-title">{{ $t('turnstileSetting') }}</div>
+            <h2 class="card-title">{{ $t('turnstileSetting') }}</h2>
             <div class="card-content">
               <div class="setting-item">
                 <div><span>{{ $t('signUpVerification') }}</span></div>
                 <div>
                   <el-button class="opt-button" size="small" type="primary" @click="openRegVerifyCount">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon class="settings-trigger" icon="cloud-mail:settings" width="18" height="18"/>
                   </el-button>
                   <el-select
                       @change="change"
@@ -305,7 +306,7 @@
                 <div><span>{{ $t('addEmailVerification') }}</span></div>
                 <div>
                   <el-button class="opt-button" size="small" type="primary" @click="openAddVerifyCount">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon class="settings-trigger" icon="cloud-mail:settings" width="18" height="18"/>
                   </el-button>
                   <el-select
                       @change="change"
@@ -342,14 +343,14 @@
           </div>
 
           <div class="settings-card">
-            <div class="card-title">{{ $t('noticeTitle') }}</div>
+            <h2 class="card-title">{{ $t('noticeTitle') }}</h2>
             <div class="card-content">
               <div class="setting-item">
                 <div><span>{{ $t('noticePopup') }}</span></div>
                 <div class="forward">
                   <span>{{ setting.notice === 0 ? $t('enabled') : $t('disabled') }}</span>
                   <el-button class="opt-button" size="small" type="primary" @click="openNoticePopupSetting">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon class="settings-trigger" icon="cloud-mail:settings" width="18" height="18"/>
                   </el-button>
                 </div>
               </div>
@@ -365,7 +366,7 @@
           </div>
 
           <div class="settings-card">
-            <div class="card-title">Workers AI</div>
+            <h2 class="card-title">Workers AI</h2>
             <div class="card-content">
               <div class="setting-item">
                 <div><span>{{ $t('codeRecognition') }}</span></div>
@@ -378,61 +379,9 @@
                 <div><span>{{ $t('codeRecognitionRules') }}</span></div>
                 <div class="forward">
                   <el-button class="opt-button" size="small" type="primary" @click="openAiCodeFilter">
-                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                    <Icon class="settings-trigger" icon="cloud-mail:settings" width="18" height="18"/>
                   </el-button>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="settings-card about">
-            <div class="card-title">{{ $t('about') }}</div>
-            <div class="card-content">
-              <div class="concerning-item">
-                <span>{{ $t('version') }} :</span>
-                <el-badge is-dot :hidden="!hasUpdate">
-                  <el-button @click="jump('https://github.com/maillab/cloud-mail/releases')">
-                    {{ currentVersion }}
-                    <template #icon>
-                      <Icon icon="qlementine-icons:version-control-16" style="font-size: 20px" color="#1890FF"/>
-                    </template>
-                  </el-button>
-                </el-badge>
-              </div>
-              <div class="concerning-item">
-                <span>{{ $t('community') }} : </span>
-                <div class="community">
-                  <el-button @click="jump('https://github.com/maillab/cloud-mail')">
-                    Github
-                    <template #icon>
-                      <Icon icon="codicon:github-inverted" width="22" height="22"/>
-                    </template>
-                  </el-button>
-                  <el-button @click="jump('https://t.me/cloud_mail_tg')">
-                    Telegram
-                    <template #icon>
-                      <Icon icon="logos:telegram" width="30" height="30"/>
-                    </template>
-                  </el-button>
-                </div>
-              </div>
-              <div class="concerning-item">
-                <span>{{ $t('support') }} : </span>
-                <el-button @click="jump('https://doc.skymail.ink/support.html')">
-                  {{ t('supportDesc') }}
-                  <template #icon>
-                    <Icon color="#79D6B5" icon="simple-icons:buymeacoffee" width="20" height="20"/>
-                  </template>
-                </el-button>
-              </div>
-              <div class="concerning-item">
-                <span>{{ $t('help') }} : </span>
-                <el-button @click="jump('https://doc.skymail.ink')">
-                  {{ t('document') }}
-                  <template #icon>
-                    <Icon color="#79D6B5" icon="fluent-color:document-32" width="18" height="18"/>
-                  </template>
-                </el-button>
               </div>
             </div>
           </div>
@@ -819,15 +768,11 @@ import loading from "@/components/loading/index.vue";
 import {getTextWidth} from "@/utils/text.js";
 import {fileToBase64} from "@/utils/file-utils.js"
 import {useI18n} from 'vue-i18n';
-import axios from "axios";
 
 defineOptions({
   name: 'sys-setting'
 })
 
-const currentVersion = 'v3.0.0'
-const hasUpdate = ref(false)
-let getUpdateErrorCount = 1;
 const {t, locale} = useI18n();
 const firstLoading = ref(true)
 const settingReady = ref(false)
@@ -937,7 +882,6 @@ const tgMsgTextOption = [{label: t('show'), value: 'show'}, {label: t('hide'), v
 const tgMsgLabelWidth = computed(() => locale.value === 'en' ? '120px' : '100px');
 
 getSettings()
-getUpdate()
 
 function getSettings() {
   settingReady.value = false
@@ -1009,20 +953,6 @@ const resendList = computed(() => {
 
   return list;
 });
-
-function getUpdate() {
-  if (getUpdateErrorCount > 5 || !getUpdateErrorCount) return
-  axios.get('https://api.github.com/repos/maillab/cloud-mail/releases/latest').then(({data}) => {
-    hasUpdate.value = data.name !== currentVersion
-    getUpdateErrorCount = 0
-  }).catch(e => {
-    getUpdateErrorCount++
-    setTimeout(() => {
-      getUpdate()
-    }, 2000)
-    console.error('检查更新失败：', e)
-  })
-}
 
 function saveAddVerifyCount() {
   if (!addVerifyCount.value) {
@@ -1456,13 +1386,6 @@ function saveTitle() {
   editSetting({title: editTitle.value})
 }
 
-function jump(href) {
-  const doc = document.createElement('a')
-  doc.href = href
-  doc.target = '_blank'
-  doc.click()
-}
-
 function editSetting(settingForm, refreshStatus = true) {
   if (settingLoading.value) return
   settingLoading.value = true
@@ -1507,7 +1430,7 @@ function editSetting(settingForm, refreshStatus = true) {
 .settings-container {
   height: 100%;
   overflow: hidden;
-  background: var(--extra-light-fill) !important;
+  background: var(--el-bg-color-page);
   position: relative;
 
   .loading {
@@ -1542,76 +1465,110 @@ function editSetting(settingForm, refreshStatus = true) {
     height: 100%;
   }
 
-  .scroll-body {
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+}
+
+.scroll-body {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.page-heading {
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: clamp(22px, 2.4vw, 28px);
+    font-weight: 650;
+    line-height: 1.25;
+  }
+
+  p {
+    margin-top: 6px;
+    color: var(--el-text-color-secondary);
   }
 }
 
 .card-grid {
-
+  flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
-  padding: 20px;
-  gap: 20px;
-  @media (max-width: 500px) {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  }
-  @media (max-width: 1023px) {
-    gap: 15px;
-    padding: 15px;
-  }
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, max(240px, calc((100% - 36px) / 4))), 1fr));
+  gap: 12px;
 }
 
 .background {
-  width: 249px;
-  height: 140px;
-  border-radius: 4px;
-  border: 1px solid var(--light-border);
-  @media (max-width: 500px) {
-    width: 160px;
-    height: 90px;
-  }
+  width: clamp(100px, 42cqw, 200px);
+  aspect-ratio: 16 / 9;
+  border-radius: 6px;
+  border: 1px solid var(--el-border-color-light);
+}
+
+.background-empty {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 6px;
+  background: var(--el-fill-color-light);
+  color: var(--el-text-color-secondary);
+  font-size: 12px;
 }
 
 .background-btn {
   display: flex;
-  gap: 10px;
+  gap: 6px;
   flex-direction: column;
 }
 
 .bot-verify-select {
-  margin-left: 10px;
+  margin-left: 6px;
 }
 
 .settings-card {
+  container-type: inline-size;
+  min-width: 0;
   background-color: var(--el-bg-color);
-  border-radius: 8px;
-  border: 1px solid var(--el-border-color);
-  transition: all 300ms;
+  border-radius: 12px;
+  border: 1px solid var(--el-border-color-light);
   overflow: hidden;
 }
 
 
 .card-title {
-  font-size: 15px;
-  font-weight: bold;
-  padding: 10px 20px;
-  border-bottom: 1px solid var(--el-border-color);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
 .card-content {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  padding: 0 16px;
+
+  > :is(.setting-item, .r2domain-item) {
+    min-height: 46px;
+    padding-block: 8px;
+    align-items: center;
+  }
+
+  > * + * {
+    border-top: 1px solid var(--el-border-color-lighter);
+  }
+
+  .settings-container & .opt-button.el-button--primary:not(.is-plain, .is-link, .is-text) {
+    min-width: 32px;
+    margin-inline-start: 6px;
+    padding-inline: 7px;
+    --el-button-bg-color: var(--el-fill-color-light);
+    --el-button-border-color: transparent;
+    --el-button-text-color: var(--mail-link-color);
+    --el-button-hover-bg-color: var(--choose-account-background);
+    --el-button-hover-border-color: transparent;
+    --el-button-hover-text-color: var(--mail-link-color);
+  }
 }
 
 .setting-item {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
   gap: 10px;
   font-weight: normal;
 
@@ -1918,32 +1875,6 @@ function editSetting(settingForm, refreshStatus = true) {
     justify-content: center;
     align-items: center;
     gap: 5px;
-  }
-}
-
-.concerning-item {
-  display: flex;
-  align-items: center;
-
-  .community {
-    display: flex;
-    row-gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  :deep(.el-button) {
-    padding: 0 10px;
-    font-weight: normal;
-
-    i {
-      font-size: 22px;
-    }
-  }
-
-  > span:first-child {
-    font-weight: normal;
-    padding-right: 20px;
-    white-space: nowrap;
   }
 }
 

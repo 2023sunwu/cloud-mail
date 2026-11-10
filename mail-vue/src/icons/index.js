@@ -707,3 +707,33 @@ addCollection({
     }
 })
 
+const outline = (body) => `<g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${body}</g>`;
+
+addCollection({
+    prefix: "cloud-mail",
+    width: 24,
+    height: 24,
+    icons: {
+        mail: {
+            body: outline('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6 8.5 7 8.5-7"/>')
+        },
+        "mail-read-status": {
+            body: '<rect x="3" y="5" width="18" height="14" rx="2" fill="#fff" stroke="#7d8b9c" stroke-width="1.5"/><path d="m4 7 8 6 8-6" fill="none" stroke="#7d8b9c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
+        },
+        "mail-unread-status": {
+            body: '<rect x="3" y="5" width="18" height="14" rx="2" fill="#1890ff"/><path d="m4 7 8 6 8-6" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
+        },
+        inbox: {
+            body: outline('<path d="m3 13 3.2-7.2A1.5 1.5 0 0 1 7.6 5h8.8a1.5 1.5 0 0 1 1.4.8L21 13v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/>')
+        },
+        copy: {
+            body: outline('<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 5V4a1 1 0 0 0-1-1H5a2 2 0 0 0-2 2v10a1 1 0 0 0 1 1h1"/>')
+        },
+        rename: {
+            body: outline('<path d="M12 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="m9 15 1-3.5 7.6-7.6a2.1 2.1 0 0 1 3 3L13 14.5zM16 5.5l3 3"/>')
+        },
+        settings: {
+            body: outline('<path d="m9.5 4 .8-2h3.4l.8 2 1.6.9 2.1-.3 1.7 2.9-1.3 1.7V11l1.3 1.7-1.7 2.9-2.1-.3-1.6.9-.8 2h-3.4l-.8-2-1.6-.9-2.1.3-1.7-2.9L5.4 11V9.2L4.1 7.5l1.7-2.9 2.1.3z" transform="translate(0 1.9)"/><circle cx="12" cy="12" r="2.8"/>')
+        }
+    }
+});

@@ -25,9 +25,9 @@ export default defineConfig(({mode}) => {
                     theme_color: '#FFFFFF',
                     icons: [
                         {
-                            src: 'mail-pwa.png',
-                            sizes: '192x192',
-                            type: 'image/png',
+                            src: 'mail-logo.svg',
+                            sizes: 'any',
+                            type: 'image/svg+xml',
                         }
                     ],
                 },
@@ -53,6 +53,7 @@ export default defineConfig(({mode}) => {
         },
         build: {
             target: 'es2022',
+            cssCodeSplit: false,
             outDir: env.VITE_OUT_DIR || 'dist',
             emptyOutDir: true,
             assetsInclude: ['**/*.json']

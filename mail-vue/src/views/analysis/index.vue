@@ -2,8 +2,8 @@
   <div v-if="analysisLoading" class="analysis-loading">
     <loading/>
   </div>
-  <el-scrollbar v-else style="height: 100%;">
-    <div class="analysis" :key="boxKey">
+  <el-scrollbar v-else class="analysis-scroll" style="height: 100%;">
+    <div class="analysis" ref="analysisRoot">
       <div class="number">
         <div class="number-item">
           <div class="top">
@@ -15,7 +15,7 @@
             </div>
             <div class="right">
               <div class="count-icon">
-                <Icon icon="hugeicons:mailbox-01" width="25" height="25"></Icon>
+                <Icon icon="cloud-mail:inbox" width="25" height="25"></Icon>
               </div>
             </div>
           </div>
@@ -121,7 +121,7 @@
 <script setup>
 import {Icon} from "@iconify/vue";
 import {useTransition} from "@vueuse/core";
-import {defineOptions, onActivated, onDeactivated, onMounted, reactive, ref, watch, computed} from "vue";
+import {defineOptions, onActivated, onMounted, onBeforeUnmount, nextTick, reactive, ref, watch, computed} from "vue";
 import echarts from "@/echarts/index.js";
 import dayjs from "dayjs";
 import {analysisEcharts} from "@/request/analysis.js";
@@ -191,19 +191,18 @@ const topic = computed(() => ({
   borderColor: uiStore.dark ? '#141414' : '#FFFFFF',
   scaleLineColor: uiStore.dark ? '#636466' : '#CDD0D6',
   crossColor: uiStore.dark ? '#8D9095' : '#A8ABB2',
-  axisColor: uiStore.dark ? '#A3A6AD' : '#909399',
-  splitLineColor: uiStore.dark ? '#58585B' : '#D4D7DE',
+  axisColor: uiStore.dark ? '#A3A6AD' : '#586576',
+  splitLineColor: uiStore.dark ? '#414243' : '#edf0f4',
   gaugeSplitLine: uiStore.dark ? '#CFD3DC' : '#606266',
   containerBackground: uiStore.dark ? '#6C6E72' : '#E6EBF8'
 }))
 let daySendTotal = 0
-let leaveWidth = 0
 let senderPie = null
 let increaseLine = null
 let emailColumn = null
 let sendGauge = null
 let first = true
-let boxKey = ref(0)
+const analysisRoot = ref(null)
 let senderPieLeft = window.innerWidth < 500 ? `${window.innerWidth - 110}` : '72%'
 let analysisDark = uiStore.dark
 
@@ -244,54 +243,61 @@ onMounted(() => {
 
 })
 
-const widthChange = debounce(initPicture, 500, {
-  leading: false,
-  trailing: true
-})
-
-
-watch(() => uiStore.asideShow, () => {
-  if (window.innerWidth > 1024) {
-    widthChange()
+const widthChange = debounce(() => {
+  if (route.name !== 'analysis') return;
+  setStyle();
+  for (const chart of [senderPie, increaseLine, emailColumn, sendGauge]) {
+    chart?.resize();
   }
-})
+  if (senderPie) {
+    const narrow = senderPie.getWidth() < 420;
+    senderPie.setOption({
+      legend: { orient: narrow ? 'horizontal' : 'vertical', left: narrow ? 'center' : 10, top: narrow ? 'bottom' : 20 },
+      series: [{ center: [narrow ? '50%' : '72%', narrow ? '43%' : '45%'] }]
+    });
+  }
+}, 100);
+
+const resizeObserver = new ResizeObserver(() => widthChange());
+
+watch(analysisRoot, element => {
+  resizeObserver.disconnect();
+  if (element) resizeObserver.observe(element);
+});
 
 onActivated(() => {
-  if (first) return
-  if (window.innerWidth !== leaveWidth && leaveWidth !== 0) {
-    widthChange()
-  } else if (!senderPie) {
-    widthChange()
-  } else if (analysisDark !== uiStore.dark) {
-    initPicture()
-    analysisDark = uiStore.dark
+  if (first) return;
+  if (analysisDark !== uiStore.dark) {
+    analysisDark = uiStore.dark;
+    initPicture();
+  } else {
+    widthChange();
   }
-})
+});
 
-onDeactivated(() => {
-  leaveWidth = window.innerWidth
-})
-
-window.onresize = () => {
-  setStyle()
-  widthChange()
-}
+onBeforeUnmount(() => {
+  resizeObserver.disconnect();
+  widthChange.cancel();
+  for (const chart of [senderPie, increaseLine, emailColumn, sendGauge]) {
+    chart?.dispose();
+  }
+});
 
 watch(() => uiStore.dark, () => {
-  if (route.name !== 'analysis') return
-  analysisDark = uiStore.dark
-  initPicture()
-})
+  if (route.name !== 'analysis') return;
+  analysisDark = uiStore.dark;
+  initPicture();
+});
 
-function initPicture() {
-  if (route.name !== 'analysis') return
-  boxKey.value++
-  setTimeout(() => {
-    createSenderPie()
-    createIncreaseLine()
-    createEmailColumnChart();
-    createSendGauge();
-  })
+async function initPicture() {
+  await nextTick();
+  if (route.name !== 'analysis' || !analysisRoot.value) return;
+  setStyle();
+  createSenderPie();
+  createIncreaseLine();
+  createEmailColumnChart();
+  createSendGauge();
+  widthChange();
 }
 
 function setStyle() {
@@ -376,7 +382,7 @@ function createSenderPie() {
         labelLine: {
           show: true
         },
-        color: ['#3CB2FF', '#13DEB9', '#FBBF24', '#FF7F50', '#BAE6FD', '#C084FC'] // 添加符合主题的配色
+        color: ['#1890ff', '#72a7d8', '#577590', '#9bbfdc', '#758a9e', '#c2d7e8'] // 添加符合主题的配色
       }
     ]
   }
@@ -641,7 +647,7 @@ function createEmailColumnChart() {
         },
         data: emailColumnData.sendData,
         itemStyle: {
-          color: '#13deb9',
+          color: '#8aaecb',
         }
       }
     ]
@@ -666,37 +672,53 @@ function createSendGauge() {
       name: t('sentToday'),
       type: 'gauge',
       max: 100,
+      splitNumber: 5,
       // 进度条颜色（新增）
       progress: {
         show: true,
         roundCap: true,
+        width: 8,
         itemStyle: {
-          color: '#3CB2FF'
+          color: '#1890ff'
         }
       },
       // 指针颜色（新增）
       pointer: {
+        width: 4,
+        length: '56%',
         itemStyle: {
-          color: '#3CB2FF'
+          color: '#1890ff'
         }
       },
+      anchor: {
+        show: true,
+        size: 9,
+        itemStyle: { color: '#1890ff', borderColor: topic.value.background, borderWidth: 2 }
+      },
       axisLabel: {
-        color: topic.value.gaugeSplitLine,
+        fontSize: 11,
+        distance: 18,
+        color: topic.value.axisColor,
       },
       // 轴线背景色（新增）
       axisLine: {
         roundCap: true,
         lineStyle: {
+          width: 8,
           color: [[1, topic.value.containerBackground]]
         }
       },
       splitLine: {
+        distance: 12,
+        length: 10,
         lineStyle: {
           color: topic.value.gaugeSplitLine, // 大刻度线颜色
         }
       },
       // 刻度颜色（新增）
       axisTick: {
+        distance: 12,
+        length: 4,
         lineStyle: {
           color: topic.value.axisColor
         }
@@ -704,6 +726,8 @@ function createSendGauge() {
       // 中心文字颜色（新增）
       detail: {
         valueAnimation: true,
+        fontSize: 30,
+        fontWeight: 600,
         formatter: '{value}',
         color: topic.value.color // 黑色文字
       },
@@ -716,7 +740,7 @@ function createSendGauge() {
         }
       }]
     }],
-    color: ['#3CB2FF']
+    color: ['#1890ff']
   };
   sendGauge.setOption(option);
 }
@@ -746,202 +770,129 @@ function createSendGauge() {
 }
 
 .analysis {
-  height: 100%;
-  padding: 20px 20px 30px;
-  gap: 20px;
-  background: var(--extra-light-fill);
+  flex: 1;
+  min-width: 0;
+  min-height: 100%;
+  padding: 16px;
   display: grid;
-  grid-auto-rows: min-content;
-  @media (max-width: 1024px) {
-    padding: 15px 15px 30px;
-    gap: 15px
+  gap: 12px;
+  grid-template-rows: auto minmax(280px, 1fr) minmax(280px, 1fr);
+  background: var(--el-bg-color-page);
+  container-type: inline-size;
+}
+
+.analysis-scroll :deep(.el-scrollbar__view) {
+  min-height: 100%;
+  display: flex;
+}
+
+.number {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.number-item,
+.picture-item,
+.picture-cs-item {
+  min-width: 0;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 12px;
+}
+
+.number-item {
+  padding: 16px;
+
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
   }
 
-  .title {
-    margin-top: 10px;
-    margin-left: 15px;
-    font-size: 18px;
-    font-weight: 500;
+  .left {
+    min-width: 0;
+    color: var(--el-text-color-secondary);
+    font-size: 13px;
   }
 
-  .number {
+  :deep(.el-statistic__number) {
+    color: var(--el-text-color-primary);
+    font-size: 28px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .count-icon {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 20px;
-    @media (max-width: 1366px) {
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-    @media (max-width: 767px) {
-      grid-template-columns: 1fr;
-    }
-
-    .number-item {
-      background: var(--el-bg-color);
-      border-radius: 8px;
-      border: 1px solid var(--el-border-color);
-      padding: 21px 20px;
-
-      .top {
-        display: grid;
-        justify-content: space-between;
-        align-content: center;
-        grid-template-columns: auto auto;
-
-        .left {
-          display: grid;
-          gap: 5px;
-          grid-auto-rows: min-content;
-
-          > div:first-child {
-            font-size: 15px;
-          }
-
-          > div:last-child {
-            font-size: 13px;
-          }
-
-          :deep(.el-statistic__number) {
-            font-size: 26px;
-          }
-        }
-
-        .right {
-          display: grid;
-          align-items: center;
-
-          .count-icon {
-            top: 3px;
-            position: relative;
-            display: grid;
-            align-items: center;
-            padding: 14px;
-            border-radius: 8px;
-            background: var(--el-color-primary-light-9);
-            color: var(--el-color-primary);
-          }
-        }
-
-      }
-
-      .delete-ratio {
-        width: 100%;
-        display: grid;
-        grid-template-columns:  auto auto;
-        justify-content: start;
-        gap: 20px;
-        padding-top: 5px;
-        font-size: 14px;
-
-        .normal {
-          width: fit-content;
-          color: var(--el-color-success);
-          font-weight: bold;;
-          margin-left: 3px;
-        }
-
-        .deleted {
-          width: fit-content;
-          color: var(--el-color-danger);
-          font-weight: bold;;
-          margin-left: 3px;
-        }
-      }
-
-    }
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 9px;
+    background: var(--choose-account-background);
+    color: var(--mail-link-color);
   }
 
-  .picture {
-    display: grid;
-    grid-template-columns: 500px 1fr;
-    gap: 20px;
-    @media (max-width: 1620px) {
-      grid-template-columns: 1fr;
-    }
-    @media (max-width: 1024px) {
-      gap: 15px;
-    }
+  .delete-ratio {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-top: 8px;
+    color: var(--el-text-color-secondary);
+    font-size: 12px;
 
-    .picture-item {
-      background: var(--el-bg-color);
-      border-radius: 8px;
-      border: 1px solid var(--el-border-color);
-
-      .source-button {
-        padding-right: 15px;
-        display: flex;
-        align-items: start;
-
-        :deep(.el-radio-button__inner) {
-          padding: 6px 10px;
-        }
-      }
-
-      .sender-pie {
-        height: 350px;
-        @media (max-width: 767px) {
-          height: 200px;
-        }
-      }
-
-      .increase-line {
-        height: 350px;
-        @media (max-width: 767px) {
-          height: 280px;
-        }
-      }
-    }
-  }
-
-  .picture-cs {
-    display: grid;
-    grid-template-columns: 1fr 500px;
-    gap: 20px;
-    @media (max-width: 1620px) {
-      grid-template-columns: 1fr;
-      gap: 15px;
+    span {
+      margin-left: 4px;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
     }
 
-    .picture-cs-item {
-      background: var(--el-bg-color);
-      border-radius: 8px;
-      border: 1px solid var(--el-border-color);
-
-      .send-count {
-        height: 350px;
-        @media (max-width: 767px) {
-          height: 320px;
-        }
-      }
-
-      .email-column {
-        height: 350px;
-        @media (max-width: 767px) {
-          height: 250px;
-        }
-      }
-    }
+    .normal { color: var(--mail-link-color); }
+    .deleted { color: var(--el-text-color-secondary); }
   }
 }
 
+.picture,
+.picture-cs {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.picture-item,
+.picture-cs-item {
+  display: flex;
+  flex-direction: column;
+
+  .title {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--el-border-color-lighter);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+}
+
+.sender-pie,
+.increase-line,
+.email-column,
+.send-count {
+  flex: 1;
+  min-height: 240px;
+  width: 100%;
+}
+
+@container (max-width: 780px) {
+  .number { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .picture, .picture-cs { grid-template-columns: minmax(0, 1fr); }
+}
+
+@container (max-width: 400px) {
+  .number-item { padding: 12px; }
+  .number-item .count-icon { width: 30px; height: 30px; }
+  .number-item :deep(.el-statistic__number) { font-size: 24px; }
+  .number-item .top { gap: 6px; }
+}
 </style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

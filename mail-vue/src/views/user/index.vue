@@ -337,7 +337,7 @@
           <el-dropdown-item @click="openAccountList(rightClickUser.userId)" >
             <template #default>
               <div class="right-dropdown-item" >
-                <Icon icon="hugeicons:mailbox-01" width="20" height="20" />
+                <Icon icon="cloud-mail:inbox" width="20" height="20" />
                 <span>{{ t('userEmail') }}</span>
               </div>
             </template>

@@ -8,6 +8,7 @@
                  :show-star="false"
                  show-user-info
                  show-status
+                 show-unread
                  actionLeft="4px"
                  :show-account-icon="false"
                  :time-sort="params.timeSort"
@@ -176,7 +177,6 @@ const paramsStar = localStorage.getItem('all-email-params')
 if (paramsStar) {
   const locaParams = JSON.parse(paramsStar)
   params.type = locaParams.type
-  params.timeSort = locaParams.timeSort
   params.status = locaParams.status
   params.searchType = locaParams.searchType
 }
@@ -282,6 +282,8 @@ function typeSelectChange() {
 function jumpContent(email) {
   emailStore.contentData.email = email
   emailStore.contentData.delType = 'physics'
+  emailStore.contentData.showUnread = true
+  emailStore.contentData.readScope = 'all'
   emailStore.contentData.showStar = false
   emailStore.contentData.showReply = false
   router.push({name: 'content'})

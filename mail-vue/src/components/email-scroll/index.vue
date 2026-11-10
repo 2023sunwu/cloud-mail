@@ -16,7 +16,7 @@
               v-if="getSelectedMailsIds().length > 0"
               @click="handleDelete"/>
         <Icon v-perm="'email:delete'" class="icon delete" icon="fluent:mail-read-20-regular" width="21" height="21"
-              v-if="getSelectedMailsIds().length > 0 && showUnread"
+              v-if="getSelectedMailsIds().length > 0 && showUnread && props.emailRead"
               @click="handleRead"/>
       </div>
 
@@ -38,7 +38,7 @@
                         :key="keyCount"
         >
           <template #default="{ data: item, index }" >
-            <div :class="'email-row ' + props.type"
+            <div :class="['email-row', props.type, { 'is-unread': isUnread(item) }]"
                  :data-checked="item.checked"
                  @click="jumpDetails(item)"
                  v-if="!item.expand"
@@ -55,9 +55,13 @@
               <div v-if="!showStar"></div>
               <div class="title" :class="accountShow ? 'title-column' : 'title-column'">
 
-                <div class="email-sender" :style=" (showStatus ? 'gap: 10px;' : '') + ((item.unread === EmailUnreadEnum.UNREAD && showUnread)  ? 'font-weight: bold' : '')">
+                <div class="email-sender" :style=" (showStatus ? 'gap: 10px;' : '') + ((isUnread(item))  ? 'font-weight: bold' : '')">
                   <div class="email-status" v-if="showStatus">
-                    <el-tooltip effect="dark" :content="item.statusIcon.content">
+                    <el-tooltip v-if="props.type === 'all-email' && item.status === 0" effect="dark"
+                                :content="t(item.unread === EmailUnreadEnum.UNREAD ? 'unread' : 'read')">
+                      <Icon :icon="item.unread === EmailUnreadEnum.UNREAD ? 'cloud-mail:mail-unread-status' : 'cloud-mail:mail-read-status'" width="20" height="20"/>
+                    </el-tooltip>
+                    <el-tooltip v-else effect="dark" :content="item.statusIcon.content">
                       <Icon :icon="item.statusIcon.icon" :style="`color: ${item.statusIcon.color}`" width="20" height="20"/>
                     </el-tooltip>
                     <div class="del-status" v-if="item.isDel">
@@ -69,7 +73,6 @@
                   <div v-else></div>
                   <span class="name">
                     <span>
-                      <div class="unread" v-if="isMobile && (item.unread === EmailUnreadEnum.UNREAD && showUnread) "/>
                       <slot name="name" :email="item"> {{ item.name }}</slot>
                     </span>
                     <span>
@@ -80,8 +83,7 @@
                 </div>
                 <div>
                   <div class="email-text">
-                    <span class="email-subject" :style="(item.unread === EmailUnreadEnum.UNREAD && showUnread)  ? 'font-weight: bold' : ''">
-                      <div class="unread" v-if="!isMobile && (item.unread === EmailUnreadEnum.UNREAD && showUnread) "/>
+                    <span class="email-subject" :style="(isUnread(item))  ? 'font-weight: bold' : ''">
                       <span v-if="item.code" class="code-tag" @click.stop="copyCode(item.code)">[{{ t('codeLabel') }}{{ item.code }}]</span>
                       <span class="subject-text">
                         <slot name="subject" :email="item" >
@@ -108,7 +110,7 @@
                 </div>
               </div>
               <div class="email-right" :style="showUserInfo ? 'align-self: start;':''">
-                <span class="email-time" :style="(item.unread === EmailUnreadEnum.UNREAD && showUnread) ? 'font-weight: bold' : ''">{{ item.formatCreateTime }}</span>
+                <span class="email-time" :style="(isUnread(item)) ? 'font-weight: bold' : ''">{{ item.formatCreateTime }}</span>
               </div>
             </div>
             <skeletonBlock v-else-if="item.expand === 'loading'"
@@ -158,7 +160,7 @@
           <el-dropdown-item v-if="rightClickEmail.code" @click="copyCode(rightClickEmail.code)" >
             <template #default>
               <div class="right-dropdown-item">
-                <Icon icon="fluent-color:clipboard-24" width="20" height="20" />
+                <Icon icon="cloud-mail:copy" width="20" height="20" />
                 <span>{{t('copyCode')}}</span>
               </div>
             </template>
@@ -624,6 +626,10 @@ function emailRead(emailId) {
   localRead([emailId]);
 }
 
+function isUnread(email) {
+  return props.showUnread && email.type === 0 && email.unread === EmailUnreadEnum.UNREAD;
+}
+
 function localRead(emailIds) {
   emailIds.forEach(emailId => {
     const index = emailList.findIndex(email => email.emailId === emailId);
@@ -999,6 +1005,16 @@ function loadData() {
     /* 触屏 */
     user-select: none;
   }
+  &.is-unread {
+    background: var(--el-color-primary-light-9);
+
+  }
+
+  &.all-email.is-unread {
+    background: color-mix(in srgb, var(--el-color-primary) 5%, var(--el-bg-color));
+
+  }
+
   &.all-email {
     height: 65px;
     @media (max-width: 1366px) {
@@ -1347,16 +1363,6 @@ function loadData() {
   padding-left: 14px;
 }
 
-.unread {
-  height: 6px;
-  width: 6px;
-  background: var(--el-color-primary);
-  margin-bottom: 2px;
-  margin-right: 5px;
-  border-radius: 50%;
-  display: inline-block;
-  justify-content: center;
-}
 
 ul {
   list-style: none;

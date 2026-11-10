@@ -983,6 +983,12 @@ const emailService = {
 		await orm(c).delete(email).where(eq(email.accountId, accountId)).run();
 	},
 
+	async readAll(c, params) {
+		await orm(c).update(email)
+			.set({ unread: emailConst.unread.READ })
+			.where(and(inArray(email.emailId, params.emailIds), eq(email.type, emailConst.type.RECEIVE)));
+	},
+
 	async read(c, params, userId) {
 		const { emailIds } = params;
 		await orm(c).update(email).set({ unread: emailConst.unread.READ }).where(and(eq(email.userId, userId), inArray(email.emailId, emailIds)));

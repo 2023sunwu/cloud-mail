@@ -379,8 +379,8 @@ function formatName(email) {
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    color: #ffffff;
-    background: linear-gradient(135deg, #1890ff, #3a80dd);
+    color: var(--mail-link-color);
+    background: var(--choose-account-background);
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
@@ -389,7 +389,7 @@ function formatName(email) {
     .writer-text {
       margin-left: 15px;
       font-size: 14px;
-      font-weight: bold;;
+      font-weight: bold;
     }
   }
 }

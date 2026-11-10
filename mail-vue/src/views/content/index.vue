@@ -88,7 +88,7 @@ import {getExtName, formatBytes} from "@/utils/file-utils.js";
 import {cvtR2Url,toOssDomain} from "@/utils/convert.js";
 import {getIconByName} from "@/utils/icon-utils.js";
 import {useSettingStore} from "@/store/setting.js";
-import {allEmailDelete} from "@/request/all-email.js";
+import {allEmailDelete, allEmailRead} from "@/request/all-email.js";
 import {useUiStore} from "@/store/ui.js";
 import {useI18n} from "vue-i18n";
 import {EmailUnreadEnum} from "@/enums/email-enum.js";
@@ -107,15 +107,21 @@ watch(() => accountStore.currentAccountId, () => {
   handleBack()
 })
 
-onMounted(() => {
-  if (emailStore.contentData.showUnread && email.unread === EmailUnreadEnum.UNREAD) {
-    email.unread = EmailUnreadEnum.READ;
-    emailRead([email.emailId]);
+onMounted(async () => {
+  if (emailStore.contentData.showUnread && email.type === 0 && email.unread === EmailUnreadEnum.UNREAD) {
+    const markRead = emailStore.contentData.readScope === 'all' ? allEmailRead : emailRead;
+    try {
+      await markRead([email.emailId]);
+      email.unread = EmailUnreadEnum.READ;
+    } catch {
+      // Keep the unread state when the request fails so opening the mail can retry.
+    }
   }
 })
 
 onUnmounted(() => {
   emailStore.contentData.showUnread = false;
+  emailStore.contentData.readScope = 'own';
 })
 
 function openReply() {

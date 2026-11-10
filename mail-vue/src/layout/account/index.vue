@@ -12,26 +12,38 @@
             {{ item.email }}
           </div>
           <div class="opt">
-            <div class="send-email" @click.stop>
-              <Icon @click="setAllReceive(item)" v-if="!item.allReceive" icon="eva:email-fill" width="22" height="22" color="#fccb1a"/>
-              <Icon @click="setAllReceive(item)" v-else icon="flat-color-icons:folder" width="22" height="22" color="#23c4f1" />
-            </div>
+            <el-tooltip :content="$t(item.allReceive ? 'disableReceiveAll' : 'enableReceiveAll')"
+                        placement="top" :show-after="80" :hide-after="0" :enterable="false">
+              <button type="button" class="account-action" :class="{ 'receive-enabled': item.allReceive }"
+                      :aria-label="$t(item.allReceive ? 'disableReceiveAll' : 'enableReceiveAll')"
+                      :aria-pressed="Boolean(item.allReceive)" @click.stop="setAllReceive(item)">
+                <Icon :icon="item.allReceive ? 'cloud-mail:inbox' : 'cloud-mail:mail'" width="20" height="20" aria-hidden="true"/>
+              </button>
+            </el-tooltip>
             <div class="settings" @click.stop>
-              <Icon icon="fluent-color:clipboard-24" width="22" height="22" @click.stop="copyAccount(item.email)"/>
-              <Icon icon="fluent:settings-24-filled" width="21" height="21" color="#909399"
-                    v-if="showNullSetting(item)"/>
-              <el-dropdown v-else>
-                <Icon icon="fluent:settings-24-filled" width="21" height="21" color="#909399"/>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item v-if="hasPerm('email:send')" @click="openSetName(item)">{{ $t('rename') }}</el-dropdown-item>
-                    <el-dropdown-item v-if="item.accountId !== userStore.user.account.accountId" @click="setAsTop(item, index)">{{ $t('pin') }}</el-dropdown-item>
-                    <el-dropdown-item v-if="item.accountId !== userStore.user.account.accountId && hasPerm('account:delete')"
-                                      @click="remove(item)">{{ $t('delete') }}
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
+              <el-tooltip :content="$t('copyAccount')" placement="top" :show-after="80" :hide-after="0" :enterable="false">
+                <button type="button" class="account-action" :aria-label="$t('copyAccount')" @click="copyAccount(item.email)">
+                  <Icon icon="cloud-mail:copy" width="20" height="20" aria-hidden="true"/>
+                </button>
+              </el-tooltip>
+              <el-tooltip v-if="!showNullSetting(item)" :content="$t(hasPerm('email:send') ? 'renameAccount' : 'manageAccount')"
+                          placement="top" :show-after="80" :hide-after="0" :enterable="false">
+                <el-dropdown trigger="click">
+                  <button type="button" class="account-action"
+                          :aria-label="$t(hasPerm('email:send') ? 'renameAccount' : 'manageAccount')">
+                    <Icon icon="cloud-mail:rename" width="20" height="20" aria-hidden="true"/>
+                  </button>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item v-if="hasPerm('email:send')" @click="openSetName(item)">{{ $t('rename') }}</el-dropdown-item>
+                      <el-dropdown-item v-if="item.accountId !== userStore.user.account.accountId" @click="setAsTop(item, index)">{{ $t('pin') }}</el-dropdown-item>
+                      <el-dropdown-item v-if="item.accountId !== userStore.user.account.accountId && hasPerm('account:delete')"
+                                        @click="remove(item)">{{ $t('delete') }}
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </el-tooltip>
             </div>
           </div>
         </el-card>
@@ -606,9 +618,29 @@ path[fill="#ffdda1"] {
         gap: 10px;
       }
 
-      .send-email {
-        display: flex;
-        align-items: center;
+      .account-action {
+        display: grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 5px;
+        color: var(--el-text-color-secondary);
+        cursor: pointer;
+
+        &.receive-enabled {
+          color: var(--mail-link-color);
+        }
+
+        &:focus-visible {
+          outline: 2px solid var(--mail-link-color);
+          outline-offset: 2px;
+        }
+
+        @media (hover: hover) {
+          &:hover {
+            color: var(--mail-link-color);
+          }
+        }
       }
     }
 

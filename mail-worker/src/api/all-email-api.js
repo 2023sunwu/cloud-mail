@@ -21,3 +21,8 @@ app.get('/allEmail/latest', async (c) => {
 	const list = await emailService.allEmailLatest(c, c.req.query());
 	return c.json(result.ok(list));
 })
+
+app.put('/allEmail/read', async (c) => {
+	await emailService.readAll(c, await c.req.json());
+	return c.json(result.ok());
+});

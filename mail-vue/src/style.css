@@ -55,12 +55,89 @@ button, input, select, textarea {
     background: none;
 }
 
-*:focus {
-    outline: none;
+:focus-visible {
+    outline: 2px solid var(--mail-link-color);
+    outline-offset: 2px;
 }
 
-.el-message {
-    white-space: nowrap !important;
+::selection {
+    background: var(--choose-account-background);
+    color: var(--el-text-color-primary);
+}
+
+/* Dialogs, confirmations, and feedback share the same neutral surfaces. */
+html .el-overlay {
+    background-color: rgba(20, 30, 46, 0.36);
+}
+
+html .el-dialog:not(.is-fullscreen),
+html .el-message-box {
+    max-width: calc(100% - 32px);
+    border: 1px solid var(--el-border-color-light);
+    border-radius: 12px;
+    background-color: var(--el-bg-color-overlay);
+    box-shadow: 0 16px 48px rgba(15, 23, 42, 0.16);
+}
+
+html .el-dialog__title,
+html .el-message-box__title {
+    color: var(--el-text-color-primary);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+html .el-dialog__body,
+html .el-message-box__content {
+    color: var(--el-text-color-primary);
+    line-height: 1.6;
+}
+
+html .el-dialog__footer,
+html .el-message-box__btns {
+    padding-top: 16px;
+}
+
+html .el-message,
+html .el-notification {
+    max-width: calc(100% - 32px);
+    border: 1px solid var(--el-border-color-light);
+    border-radius: 9px;
+    background-color: var(--el-bg-color-overlay);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.10);
+}
+
+html .el-message {
+    padding: 10px 14px;
+}
+
+html .el-message .el-message__content,
+html .el-notification .el-notification__content {
+    min-width: 0;
+    color: var(--el-text-color-primary);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+html .el-notification__title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.el-dropdown .settings-trigger,
+.settings .settings-trigger {
+    color: var(--el-text-color-secondary);
+}
+
+@media (hover: hover) {
+    .el-dropdown .settings-trigger:hover {
+        outline: none;
+        color: var(--mail-link-color);
+    }
+
+    html .opt-button:has(.settings-trigger):hover:not(:disabled) {
+        border-color: transparent;
+    }
 }
 
 .message-bottom {
@@ -106,31 +183,33 @@ button, input, select, textarea {
 }
 
 :root {
+    --mail-link-color: #0968bf;
     --el-color-primary: #1890ff;
     --el-color-primary-dark-2: #1064c0;
     --el-color-primary-light-3: #4dabff;
     --el-color-primary-light-5: #69c0ff;
     --el-color-primary-light-7: #91d5ff;
-    --el-color-primary-light-9: #e6f7ff;
+    --el-color-primary-light-8: #e7f3ff;
+    --el-color-primary-light-9: #f0f7ff;
 
     --extra-light-fill: #FAFCFF;
     --light-ill: #F5F7FA;
     --light-border: #E4E7ED;
     --header-actions-border: inset 0 -1px 0 0 var(--el-border-color-lighter);
-    --aside-backgound: #001529;
+    --aside-backgound: #ffffff;
     --loadding-background: rgba(255, 255, 255, 0.8);
     --dark-border: #CDD0D6;
     --base-fill: #F0F2F5;
     --regular-text-color: #585d69;
     --light-border-color: #e7e9ec;
-    --aside-right-border: 3px 0 5px rgba(0, 21, 41, .35);
+    --aside-right-border: 1px 0 0 var(--el-border-color-lighter);
     --choose-account-background: var(--el-color-primary-light-8);
     --el-text-color-regular: var(--el-text-color-primary);
-    --email-scroll-content-color: rgba(25, 41, 59, 0.4);
-    --email-hover-background: #F2F6FC;
+    --email-scroll-content-color: #586576;
+    --email-hover-background: #f5f7fa;
     --login-border: none;
     --form-desc-color: #71717a;
-    --login-switch-color: #006be6;
+    --login-switch-color: var(--mail-link-color);
     --scrollbar-track-color: #A8ABB2;
     --base-border-color: #DCDFE6;
     --secondary-text-color: #909399;
@@ -142,7 +221,29 @@ button, input, select, textarea {
     --vt-easing: ease-out;
 }
 
+html:not(.dark) {
+    --el-bg-color: #ffffff;
+    --el-bg-color-page: #f7f8fa;
+    --el-bg-color-overlay: #ffffff;
+    --el-text-color-primary: #202938;
+    --el-text-color-secondary: #586576;
+    --el-text-color-placeholder: #657183;
+    --el-border-color: #dce2ea;
+    --el-border-color-light: #e4e9f0;
+    --el-border-color-lighter: #edf0f4;
+    --el-fill-color-light: #f6f8fb;
+    --el-fill-color-lighter: #f8f9fb;
+}
+
+html:not(.dark) .el-button--primary:where(:not(.is-plain, .is-link, .is-text, #login-box .el-button)) {
+    --el-button-bg-color: var(--mail-link-color);
+    --el-button-border-color: var(--mail-link-color);
+    --el-button-hover-bg-color: #085cab;
+    --el-button-hover-border-color: #085cab;
+}
+
 .dark {
+    --mail-link-color: #8bc4ff;
     --extra-light-fill: #191919;
     --light-ill: #262727;
     --light-border: #414243;
@@ -155,7 +256,7 @@ button, input, select, textarea {
     --light-border-color: #414243;
     --aside-right-border: 3px 0 5px #0A0A0A;
     --choose-account-background: #39393A;
-    --email-scroll-content-color: rgba(255, 255, 255, 0.3);
+    --email-scroll-content-color: #a3a6ad;
     --email-hover-background: #1D1E1F;
     --login-border: none;
     --form-desc-color: #8D9095;
@@ -169,6 +270,100 @@ button, input, select, textarea {
 
 .el-input {
     --el-input-text-color: var(--el-text-color-primary) !important;
+}
+
+/* Shared controls keep the same feedback across mail and management pages. */
+html .el-button:where(:not(#login-box .el-button)) {
+    border-radius: 7px;
+    font-weight: 500;
+    transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+
+html .el-button:where(:not(#login-box .el-button)):not(.is-disabled, .is-loading):active {
+    box-shadow: inset 0 1px 3px rgba(20, 30, 46, 0.16);
+}
+
+html .el-button.is-disabled,
+html .el-button.is-loading {
+    cursor: not-allowed;
+}
+
+html .el-button.is-loading {
+    cursor: progress;
+}
+
+html .el-button:focus-visible {
+    outline: 2px solid var(--mail-link-color);
+    outline-offset: 3px;
+}
+
+html .el-button:where(:not(#login-box .el-button)).is-link:active,
+html .el-button:where(:not(#login-box .el-button)).is-text:active {
+    box-shadow: none;
+}
+
+.layout :is(.account-action, .icon-item, .writer) {
+    transition: background-color 140ms ease, color 140ms ease;
+}
+
+.layout .account-action:active,
+.layout .toolbar .icon-item:active {
+    background-color: var(--choose-account-background);
+}
+
+html .el-input__wrapper,
+html .el-select__wrapper {
+    transition: box-shadow 140ms ease, background-color 140ms ease;
+}
+
+html .el-table {
+    --el-table-header-bg-color: var(--el-fill-color-light);
+    --el-table-header-text-color: var(--el-text-color-secondary);
+    --el-table-row-hover-bg-color: var(--email-hover-background);
+    --el-table-border-color: var(--el-border-color-lighter);
+}
+
+html .el-table thead th {
+    font-weight: 600 !important;
+}
+
+html .el-table .el-table__cell {
+    padding-block: 10px;
+}
+
+html .el-dropdown-menu {
+    padding: 5px;
+}
+
+html .el-dropdown-menu__item {
+    border-radius: 5px;
+    min-height: 32px;
+    line-height: 1.5;
+}
+
+html .el-empty__description p {
+    color: var(--el-text-color-secondary);
+}
+
+@media (hover: hover) {
+    .layout .account-action:hover {
+        background-color: var(--el-fill-color-light);
+    }
+
+    .layout .toolbar .icon-item:hover,
+    .layout .writer:hover {
+        background-color: var(--choose-account-background);
+        color: var(--mail-link-color);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html .el-button,
+    html .el-input__wrapper,
+    html .el-select__wrapper,
+    .layout :is(.account-action, .icon-item, .writer) {
+        transition: none;
+    }
 }
 
 /* 视图过渡，基于径向剪裁 */
