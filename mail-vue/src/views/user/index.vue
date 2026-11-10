@@ -1041,14 +1041,6 @@ function adjustWidth() {
 </script>
 
 <style>
-.el-message-box__container {
-  align-items: start !important;
-}
-
-.el-message-box__message {
-  word-break: break-all;
-}
-
 .el-table-filter__content {
   min-width: 0;
 }

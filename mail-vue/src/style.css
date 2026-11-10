@@ -79,6 +79,40 @@ html .el-message-box {
     box-shadow: 0 16px 48px rgba(15, 23, 42, 0.16);
 }
 
+html .el-message-box {
+    width: 380px;
+    max-width: calc(100% - 32px);
+    padding: 20px;
+}
+
+html .el-message-box__header {
+    padding-bottom: 12px;
+}
+
+html .el-message-box__container {
+    align-items: flex-start;
+    gap: 12px;
+}
+
+html .el-message-box__message {
+    word-break: normal;
+    overflow-wrap: anywhere;
+}
+
+html .el-message-box__message p {
+    line-height: 1.65;
+}
+
+html .el-message-box__btns {
+    gap: 8px;
+}
+
+html .el-message-box__btns .el-button {
+    min-width: 76px;
+    margin-left: 0;
+}
+
+
 html .el-dialog__title,
 html .el-message-box__title {
     color: var(--el-text-color-primary);
